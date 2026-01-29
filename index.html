@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK National Insurance Calculator - 2025/2026</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>UK National Insurance Calculator</h1>
+            <p class="subtitle">Optimize your NI contributions through strategic pension timing</p>
+            <p class="tax-year">2025-2026 Tax Year</p>
+        </header>
+
+        <!-- Info Section -->
+        <section class="info-section">
+            <div class="info-card">
+                <h3>💡 How It Works</h3>
+                <p>Salary sacrifice pension contributions reduce your National Insurance-able earnings. By concentrating contributions in months where you'd pay the higher 8% NI rate, you can maximize your savings.</p>
+            </div>
+        </section>
+
+        <!-- NI Bands Reference -->
+        <section class="ni-bands">
+            <h2>National Insurance Bands (2025-2026)</h2>
+            <div class="bands-table">
+                <div class="band-row header-row">
+                    <div class="band-cell">Weekly Earnings</div>
+                    <div class="band-cell">Monthly Equivalent</div>
+                    <div class="band-cell">Annual Equivalent</div>
+                    <div class="band-cell">NI Rate</div>
+                </div>
+                <div class="band-row">
+                    <div class="band-cell">Below £242</div>
+                    <div class="band-cell">Below £1,048.67</div>
+                    <div class="band-cell">Below £12,584</div>
+                    <div class="band-cell rate-zero">0%</div>
+                </div>
+                <div class="band-row">
+                    <div class="band-cell">£242 - £967</div>
+                    <div class="band-cell">£1,048.67 - £4,189.33</div>
+                    <div class="band-cell">£12,584 - £50,284</div>
+                    <div class="band-cell rate-standard">8%</div>
+                </div>
+                <div class="band-row">
+                    <div class="band-cell">Above £967</div>
+                    <div class="band-cell">Above £4,189.33</div>
+                    <div class="band-cell">Above £50,284</div>
+                    <div class="band-cell rate-upper">2%</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Input Section -->
+        <section class="input-section">
+            <h2>Your Details</h2>
+            
+            <div class="input-group">
+                <label for="annualSalary">
+                    Annual Salary (£)
+                    <span class="tooltip" data-tooltip="Your gross annual salary before any deductions">ℹ️</span>
+                </label>
+                <input type="text" id="annualSalary" placeholder="e.g., 60000" inputmode="numeric">
+            </div>
+
+            <div class="input-group">
+                <label for="totalPension">
+                    Total Annual Pension Contribution (£)
+                    <span class="tooltip" data-tooltip="Total amount of salary sacrifice pension contributions per year">ℹ️</span>
+                </label>
+                <input type="text" id="totalPension" placeholder="e.g., 12000" inputmode="numeric">
+            </div>
+
+            <div class="input-group">
+                <label>
+                    Pension Distribution Strategy
+                    <span class="tooltip" data-tooltip="How to spread your pension contributions across the year">ℹ️</span>
+                </label>
+                <select id="distributionStrategy">
+                    <option value="equal">Equal Monthly (Default - 1/12th each month)</option>
+                    <option value="frontloaded">Front-Loaded (Q1 Heavy - Maximize NI Savings)</option>
+                    <option value="custom">Custom Distribution</option>
+                </select>
+            </div>
+
+            <!-- Custom Distribution Controls -->
+            <div id="customDistribution" class="custom-distribution" style="display: none;">
+                <h3>Custom Monthly Distribution</h3>
+                <p class="distribution-helper">Adjust the percentage of total pension for each month. Total must equal 100%.</p>
+                <div class="months-grid">
+                    <div class="month-input" data-month="1">
+                        <label>Jan</label>
+                        <input type="number" class="month-percentage" data-month="1" value="8.33" min="0" max="100" step="0.1">
+                        <span class="percentage-symbol">%</span>
+                    </div>
+                    <div class="month-input" data-month="2">
+                        <label>Feb</label>
+                        <input type="number" class="month-percentage" data-month="2" value="8.33" min="0" max="100" step="0.1">
+                        <span class="percentage-symbol">%</span>
+                    </div>
+                    <div class="month-input" data-month="3">
+                        <label>Mar</label>
+                        <input type="number" class="month-percentage" data-month="3" value="8.33" min="0" max="100" step="0.1">
+                        <span class="percentage-symbol">%</span>
+                    </div>
+                    <div class="month-input" data-month="4">
+                        <label>Apr</label>
+                        <input type="number" class="month-percentage" data-month="4" value="8.33" min="0" max="100" step="0.1">
+                        <span class="percentage-symbol">%</span>
+                    </div>
+                    <div class="month-input" data-month="5">
+                        <label>May</label>
+                        <input type="number" class="month-percentage" data-month="5" value="8.33" min="0" max="100" step="0.1">
+                        <span class="percentage-symbol">%</span>
+                    </div>
+                    <div class="month-input" data-month="6">
+                        <label>Jun</label>
+                        <input type="number" class="month-percentage" data-month="6" value="8.33" min="0" max="100" step="0.1">
+                        <span class="percentage-symbol">%</span>
+                    </div>
+                    <div class="month-input" data-month="7">
+                        <label>Jul</label>
+                        <input type="number" class="month-percentage" data-month="7" value="8.33" min="0" max="100" step="0.1">
+                        <span class="percentage-symbol">%</span>
+                    </div>
+                    <div class="month-input" data-month="8">
+                        <label>Aug</label>
+                        <input type="number" class="month-percentage" data-month="8" value="8.33" min="0" max="100" step="0.1">
+                        <span class="percentage-symbol">%</span>
+                    </div>
+                    <div class="month-input" data-month="9">
+                        <label>Sep</label>
+                        <input type="number" class="month-percentage" data-month="9" value="8.33" min="0" max="100" step="0.1">
+                        <span class="percentage-symbol">%</span>
+                    </div>
+                    <div class="month-input" data-month="10">
+                        <label>Oct</label>
+                        <input type="number" class="month-percentage" data-month="10" value="8.33" min="0" max="100" step="0.1">
+                        <span class="percentage-symbol">%</span>
+                    </div>
+                    <div class="month-input" data-month="11">
+                        <label>Nov</label>
+                        <input type="number" class="month-percentage" data-month="11" value="8.33" min="0" max="100" step="0.1">
+                        <span class="percentage-symbol">%</span>
+                    </div>
+                    <div class="month-input" data-month="12">
+                        <label>Dec</label>
+                        <input type="number" class="month-percentage" data-month="12" value="8.34" min="0" max="100" step="0.1">
+                        <span class="percentage-symbol">%</span>
+                    </div>
+                </div>
+                <div class="distribution-total">
+                    Total: <span id="totalPercentage">100.00</span>%
+                    <span id="percentageWarning" class="warning" style="display: none;">⚠️ Must equal 100%</span>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button id="calculateBtn" class="btn btn-primary">Calculate NI</button>
+                <button id="resetBtn" class="btn btn-secondary">Reset</button>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="results-section" style="display: none;">
+            <h2>Results</h2>
+
+            <div class="results-grid">
+                <!-- Baseline Calculation -->
+                <div class="result-card">
+                    <h3>📊 Baseline (Equal Distribution)</h3>
+                    <p class="result-description">Pension contributions spread evenly across all 12 months</p>
+                    <div class="result-amount">
+                        <span class="label">Total Annual NI:</span>
+                        <span class="value" id="baselineNI">£0.00</span>
+                    </div>
+                    <button class="expand-btn" data-target="baselineBreakdown">View Monthly Breakdown</button>
+                    <div id="baselineBreakdown" class="breakdown" style="display: none;">
+                        <table class="breakdown-table">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Gross Pay</th>
+                                    <th>Pension</th>
+                                    <th>NI-able Pay</th>
+                                    <th>NI Paid</th>
+                                </tr>
+                            </thead>
+                            <tbody id="baselineBreakdownBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Optimized Calculation -->
+                <div class="result-card">
+                    <h3>🎯 Optimized Distribution</h3>
+                    <p class="result-description" id="optimizedDescription">Your custom pension distribution</p>
+                    <div class="result-amount">
+                        <span class="label">Total Annual NI:</span>
+                        <span class="value" id="optimizedNI">£0.00</span>
+                    </div>
+                    <button class="expand-btn" data-target="optimizedBreakdown">View Monthly Breakdown</button>
+                    <div id="optimizedBreakdown" class="breakdown" style="display: none;">
+                        <table class="breakdown-table">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Gross Pay</th>
+                                    <th>Pension</th>
+                                    <th>NI-able Pay</th>
+                                    <th>NI Paid</th>
+                                </tr>
+                            </thead>
+                            <tbody id="optimizedBreakdownBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Savings Comparison -->
+            <div class="savings-card">
+                <h3>💰 Your Savings</h3>
+                <div class="savings-content">
+                    <div class="savings-amount">
+                        <span class="label">Annual NI Savings:</span>
+                        <span class="value" id="savingsAmount">£0.00</span>
+                    </div>
+                    <div class="savings-percentage">
+                        <span id="savingsPercentage">0%</span> reduction
+                    </div>
+                </div>
+                <p class="savings-message" id="savingsMessage"></p>
+            </div>
+        </section>
+
+        <!-- Disclaimer -->
+        <footer class="disclaimer">
+            <p><strong>Disclaimer:</strong> This calculator is for illustration purposes only. The calculations are estimates and should not be considered financial or tax advice. Please consult HMRC or a qualified financial advisor for official guidance on National Insurance contributions.</p>
+            <p class="footer-links">
+                <a href="https://www.gov.uk/national-insurance" target="_blank" rel="noopener">HMRC National Insurance Information</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="js/calculator.js"></script>
+</body>
+</html>
