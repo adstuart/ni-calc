@@ -175,8 +175,16 @@ function calculateMonthlyNI(niableIncome) {
 // Get pension distribution percentages
 function getPensionDistribution() {
     const strategy = document.getElementById('distributionStrategy').value;
-    const monthInputs = document.querySelectorAll('.month-percentage');
     
+    // For predefined strategies, return the distribution directly
+    if (strategy === 'equal') {
+        return Array(12).fill(100 / 12);
+    } else if (strategy === 'frontloaded') {
+        return [33.33, 33.33, 33.34, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    }
+    
+    // For custom strategy, read from inputs
+    const monthInputs = document.querySelectorAll('.month-percentage');
     const percentages = Array.from(monthInputs).map(input => parseFloat(input.value) || 0);
     
     // Validate total equals 100%
