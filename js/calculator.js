@@ -463,11 +463,11 @@ function displayBreakdown(tableBodyId, breakdown) {
     const totalsRow = document.createElement('tr');
     totalsRow.className = 'totals-row';
     totalsRow.innerHTML = `
-        <td><strong>Total</strong></td>
-        <td><strong>${formatCurrency(totalGrossPay)}</strong></td>
-        <td><strong>${formatCurrency(totalPension)}</strong></td>
-        <td><strong>${formatCurrency(totalNiableIncome)}</strong></td>
-        <td><strong>${formatCurrency(totalNI)}</strong></td>
+        <td>Total</td>
+        <td>${formatCurrency(totalGrossPay)}</td>
+        <td>${formatCurrency(totalPension)}</td>
+        <td>${formatCurrency(totalNiableIncome)}</td>
+        <td>${formatCurrency(totalNI)}</td>
     `;
     tbody.appendChild(totalsRow);
 }
