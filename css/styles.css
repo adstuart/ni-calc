@@ -555,6 +555,22 @@ select {
     background: var(--surface-hover);
 }
 
+.breakdown-table .totals-row {
+    border-top: 3px solid var(--primary-color);
+    background: linear-gradient(135deg, var(--background), var(--surface-hover));
+}
+
+.breakdown-table .totals-row td {
+    font-weight: 700;
+    color: var(--text-primary);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.breakdown-table .totals-row:hover td {
+    background: transparent;
+}
+
 /* Savings Card */
 .savings-card {
     background: linear-gradient(135deg, var(--secondary-color), var(--secondary-dark));

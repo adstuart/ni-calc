@@ -435,6 +435,12 @@ function displayBreakdown(tableBodyId, breakdown) {
     const tbody = document.getElementById(tableBodyId);
     tbody.innerHTML = '';
     
+    // Track totals
+    let totalGrossPay = 0;
+    let totalPension = 0;
+    let totalNiableIncome = 0;
+    let totalNI = 0;
+    
     breakdown.forEach(month => {
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -445,7 +451,25 @@ function displayBreakdown(tableBodyId, breakdown) {
             <td>${formatCurrency(month.ni)}</td>
         `;
         tbody.appendChild(row);
+        
+        // Add to totals
+        totalGrossPay += month.grossPay;
+        totalPension += month.pension;
+        totalNiableIncome += month.niableIncome;
+        totalNI += month.ni;
     });
+    
+    // Add totals row
+    const totalsRow = document.createElement('tr');
+    totalsRow.className = 'totals-row';
+    totalsRow.innerHTML = `
+        <td><strong>Total</strong></td>
+        <td><strong>${formatCurrency(totalGrossPay)}</strong></td>
+        <td><strong>${formatCurrency(totalPension)}</strong></td>
+        <td><strong>${formatCurrency(totalNiableIncome)}</strong></td>
+        <td><strong>${formatCurrency(totalNI)}</strong></td>
+    `;
+    tbody.appendChild(totalsRow);
 }
 
 // Handle reset
