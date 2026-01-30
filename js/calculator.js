@@ -12,6 +12,16 @@ const NI_CONSTANTS = {
 // Month names for display
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+// Distribution strategy arrays
+const DISTRIBUTIONS = {
+    equal: Array(12).fill(100 / 12),
+    frontloaded: [33.33, 33.33, 33.34, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    h1frontloaded: [16.67, 16.67, 16.67, 16.67, 16.67, 16.65, 0, 0, 0, 0, 0, 0],
+    quarterly: [25, 0, 0, 25, 0, 0, 25, 0, 0, 25, 0, 0],
+    backloaded: [0, 0, 0, 0, 0, 0, 0, 0, 0, 33.33, 33.33, 33.34],
+    twomonth: [50, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+};
+
 // State
 let calculationResults = null;
 
@@ -105,11 +115,7 @@ function handleStrategyChange(e) {
 function setEqualDistribution() {
     const monthInputs = document.querySelectorAll('.month-percentage');
     monthInputs.forEach((input, index) => {
-        if (index === 11) {
-            input.value = '8.34'; // Last month gets the rounding difference
-        } else {
-            input.value = '8.33';
-        }
+        input.value = DISTRIBUTIONS.equal[index].toFixed(2);
     });
     updateTotalPercentage();
 }
@@ -117,10 +123,8 @@ function setEqualDistribution() {
 // Set front-loaded distribution (Q1 heavy)
 function setFrontloadedDistribution() {
     const monthInputs = document.querySelectorAll('.month-percentage');
-    // Front-load: 33.33% each for Jan, Feb, Mar (Q1), 0% for the rest
-    const frontLoadDistribution = [33.33, 33.33, 33.34, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     monthInputs.forEach((input, index) => {
-        input.value = frontLoadDistribution[index].toFixed(2);
+        input.value = DISTRIBUTIONS.frontloaded[index].toFixed(2);
     });
     updateTotalPercentage();
 }
@@ -128,10 +132,8 @@ function setFrontloadedDistribution() {
 // Set H1 front-loaded distribution (first 6 months)
 function setH1FrontloadedDistribution() {
     const monthInputs = document.querySelectorAll('.month-percentage');
-    // H1 Front-load: 16.67% each for Jan-Jun, 0% for Jul-Dec
-    const h1FrontLoadDistribution = [16.67, 16.67, 16.67, 16.67, 16.67, 16.65, 0, 0, 0, 0, 0, 0];
     monthInputs.forEach((input, index) => {
-        input.value = h1FrontLoadDistribution[index].toFixed(2);
+        input.value = DISTRIBUTIONS.h1frontloaded[index].toFixed(2);
     });
     updateTotalPercentage();
 }
@@ -139,10 +141,8 @@ function setH1FrontloadedDistribution() {
 // Set quarterly distribution (start of each quarter)
 function setQuarterlyDistribution() {
     const monthInputs = document.querySelectorAll('.month-percentage');
-    // Quarterly: 25% at start of each quarter (Jan, Apr, Jul, Oct)
-    const quarterlyDistribution = [25, 0, 0, 25, 0, 0, 25, 0, 0, 25, 0, 0];
     monthInputs.forEach((input, index) => {
-        input.value = quarterlyDistribution[index].toFixed(2);
+        input.value = DISTRIBUTIONS.quarterly[index].toFixed(2);
     });
     updateTotalPercentage();
 }
@@ -150,10 +150,8 @@ function setQuarterlyDistribution() {
 // Set back-loaded distribution (Q4 heavy)
 function setBackloadedDistribution() {
     const monthInputs = document.querySelectorAll('.month-percentage');
-    // Back-loaded: 33.33% each for Oct, Nov, Dec (Q4), 0% for the rest
-    const backLoadDistribution = [0, 0, 0, 0, 0, 0, 0, 0, 0, 33.33, 33.33, 33.34];
     monthInputs.forEach((input, index) => {
-        input.value = backLoadDistribution[index].toFixed(2);
+        input.value = DISTRIBUTIONS.backloaded[index].toFixed(2);
     });
     updateTotalPercentage();
 }
@@ -161,10 +159,8 @@ function setBackloadedDistribution() {
 // Set two-month burst distribution (Jan & Feb only)
 function setTwoMonthBurstDistribution() {
     const monthInputs = document.querySelectorAll('.month-percentage');
-    // Two-month burst: 50% each for Jan and Feb, 0% for the rest
-    const twoMonthBurstDistribution = [50, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     monthInputs.forEach((input, index) => {
-        input.value = twoMonthBurstDistribution[index].toFixed(2);
+        input.value = DISTRIBUTIONS.twomonth[index].toFixed(2);
     });
     updateTotalPercentage();
 }
@@ -250,19 +246,9 @@ function calculateMonthlyNI(niableIncome) {
 function getPensionDistribution() {
     const strategy = document.getElementById('distributionStrategy').value;
     
-    // For predefined strategies, return the distribution directly
-    if (strategy === 'equal') {
-        return Array(12).fill(100 / 12);
-    } else if (strategy === 'frontloaded') {
-        return [33.33, 33.33, 33.34, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    } else if (strategy === 'h1frontloaded') {
-        return [16.67, 16.67, 16.67, 16.67, 16.67, 16.65, 0, 0, 0, 0, 0, 0];
-    } else if (strategy === 'quarterly') {
-        return [25, 0, 0, 25, 0, 0, 25, 0, 0, 25, 0, 0];
-    } else if (strategy === 'backloaded') {
-        return [0, 0, 0, 0, 0, 0, 0, 0, 0, 33.33, 33.33, 33.34];
-    } else if (strategy === 'twomonth') {
-        return [50, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    // For predefined strategies, return the distribution from constants
+    if (DISTRIBUTIONS[strategy]) {
+        return DISTRIBUTIONS[strategy];
     }
     
     // For custom strategy, read from inputs
