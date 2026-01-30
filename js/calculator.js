@@ -89,6 +89,14 @@ function handleStrategyChange(e) {
             setEqualDistribution();
         } else if (strategy === 'frontloaded') {
             setFrontloadedDistribution();
+        } else if (strategy === 'h1frontloaded') {
+            setH1FrontloadedDistribution();
+        } else if (strategy === 'quarterly') {
+            setQuarterlyDistribution();
+        } else if (strategy === 'backloaded') {
+            setBackloadedDistribution();
+        } else if (strategy === 'twomonth') {
+            setTwoMonthBurstDistribution();
         }
     }
 }
@@ -113,6 +121,50 @@ function setFrontloadedDistribution() {
     const frontLoadDistribution = [33.33, 33.33, 33.34, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     monthInputs.forEach((input, index) => {
         input.value = frontLoadDistribution[index].toFixed(2);
+    });
+    updateTotalPercentage();
+}
+
+// Set H1 front-loaded distribution (first 6 months)
+function setH1FrontloadedDistribution() {
+    const monthInputs = document.querySelectorAll('.month-percentage');
+    // H1 Front-load: 16.67% each for Jan-Jun, 0% for Jul-Dec
+    const h1FrontLoadDistribution = [16.67, 16.67, 16.67, 16.67, 16.67, 16.65, 0, 0, 0, 0, 0, 0];
+    monthInputs.forEach((input, index) => {
+        input.value = h1FrontLoadDistribution[index].toFixed(2);
+    });
+    updateTotalPercentage();
+}
+
+// Set quarterly distribution (start of each quarter)
+function setQuarterlyDistribution() {
+    const monthInputs = document.querySelectorAll('.month-percentage');
+    // Quarterly: 25% at start of each quarter (Jan, Apr, Jul, Oct)
+    const quarterlyDistribution = [25, 0, 0, 25, 0, 0, 25, 0, 0, 25, 0, 0];
+    monthInputs.forEach((input, index) => {
+        input.value = quarterlyDistribution[index].toFixed(2);
+    });
+    updateTotalPercentage();
+}
+
+// Set back-loaded distribution (Q4 heavy)
+function setBackloadedDistribution() {
+    const monthInputs = document.querySelectorAll('.month-percentage');
+    // Back-loaded: 33.33% each for Oct, Nov, Dec (Q4), 0% for the rest
+    const backLoadDistribution = [0, 0, 0, 0, 0, 0, 0, 0, 0, 33.33, 33.33, 33.34];
+    monthInputs.forEach((input, index) => {
+        input.value = backLoadDistribution[index].toFixed(2);
+    });
+    updateTotalPercentage();
+}
+
+// Set two-month burst distribution (Jan & Feb only)
+function setTwoMonthBurstDistribution() {
+    const monthInputs = document.querySelectorAll('.month-percentage');
+    // Two-month burst: 50% each for Jan and Feb, 0% for the rest
+    const twoMonthBurstDistribution = [50, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    monthInputs.forEach((input, index) => {
+        input.value = twoMonthBurstDistribution[index].toFixed(2);
     });
     updateTotalPercentage();
 }
@@ -152,6 +204,28 @@ function formatCurrency(amount) {
     return '£' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
+// Validate that pension distribution doesn't create negative NI-able pay
+function validateNegativeNI(annualSalary, totalPension, pensionDistributionPercentages) {
+    const monthlySalary = annualSalary / NI_CONSTANTS.MONTHS_IN_YEAR;
+    const negativeMonths = [];
+    
+    for (let month = 0; month < NI_CONSTANTS.MONTHS_IN_YEAR; month++) {
+        const monthlyPension = (totalPension * pensionDistributionPercentages[month]) / 100;
+        const niableIncome = monthlySalary - monthlyPension;
+        
+        if (niableIncome < 0) {
+            negativeMonths.push({
+                month: MONTH_NAMES[month],
+                monthlyPension: monthlyPension,
+                monthlySalary: monthlySalary,
+                deficit: Math.abs(niableIncome)
+            });
+        }
+    }
+    
+    return negativeMonths;
+}
+
 // Calculate NI for a single month
 function calculateMonthlyNI(niableIncome) {
     let ni = 0;
@@ -181,6 +255,14 @@ function getPensionDistribution() {
         return Array(12).fill(100 / 12);
     } else if (strategy === 'frontloaded') {
         return [33.33, 33.33, 33.34, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    } else if (strategy === 'h1frontloaded') {
+        return [16.67, 16.67, 16.67, 16.67, 16.67, 16.65, 0, 0, 0, 0, 0, 0];
+    } else if (strategy === 'quarterly') {
+        return [25, 0, 0, 25, 0, 0, 25, 0, 0, 25, 0, 0];
+    } else if (strategy === 'backloaded') {
+        return [0, 0, 0, 0, 0, 0, 0, 0, 0, 33.33, 33.33, 33.34];
+    } else if (strategy === 'twomonth') {
+        return [50, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     }
     
     // For custom strategy, read from inputs
@@ -256,6 +338,20 @@ function handleCalculate() {
         // Get distribution
         const distribution = getPensionDistribution();
         
+        // Validate that no month has negative NI-able pay
+        const negativeMonths = validateNegativeNI(annualSalary, totalPension, distribution);
+        if (negativeMonths.length > 0) {
+            let errorMessage = 'Error: The following month(s) would have negative NI-able income:\n\n';
+            negativeMonths.forEach(m => {
+                errorMessage += `${m.month}: Pension contribution ${formatCurrency(m.monthlyPension)} exceeds monthly salary ${formatCurrency(m.monthlySalary)} by ${formatCurrency(m.deficit)}\n`;
+            });
+            errorMessage += '\nPlease adjust your distribution strategy to ensure no single month\'s pension contribution exceeds the monthly salary.';
+            alert(errorMessage);
+            calculateBtn.classList.remove('loading');
+            calculateBtn.disabled = false;
+            return;
+        }
+        
         // Calculate baseline (equal distribution)
         const equalDistribution = Array(12).fill(100 / 12);
         const baselineResults = calculateAnnualNI(annualSalary, totalPension, equalDistribution);
@@ -314,6 +410,14 @@ function displayResults() {
         strategyDescription = 'Equal monthly pension contributions (same as baseline)';
     } else if (strategy === 'frontloaded') {
         strategyDescription = 'Front-loaded pension contributions (Q1 heavy)';
+    } else if (strategy === 'h1frontloaded') {
+        strategyDescription = 'H1 front-loaded pension contributions (first 6 months)';
+    } else if (strategy === 'quarterly') {
+        strategyDescription = 'Quarterly pension contributions (start of each quarter)';
+    } else if (strategy === 'backloaded') {
+        strategyDescription = 'Back-loaded pension contributions (Q4 heavy)';
+    } else if (strategy === 'twomonth') {
+        strategyDescription = 'Two-month burst pension contributions (Jan & Feb only)';
     }
     document.getElementById('optimizedDescription').textContent = strategyDescription;
     
